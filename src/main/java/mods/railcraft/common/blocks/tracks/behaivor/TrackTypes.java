@@ -90,6 +90,15 @@ public enum TrackTypes {
                     .build();
         }
     },
+    REINFORCED_GROUND(RailcraftBlocks.TRACK_FLEX_REINFORCED_GROUND.getRegistryName(), TrackIngredients.RAIL_REINFORCED, TrackIngredients.RAILBED_STONE) {
+        @Override
+        protected TrackType make(TrackType.Builder builder) {
+            return builder
+                    .setEventHandler(new Handler(CollisionHandler.NULL, SpeedController.REINFORCED))
+                    .setResistance(80F)
+                    .build();
+        }
+    },
     STRAP_IRON(RailcraftBlocks.TRACK_FLEX_STRAP_IRON.getRegistryName(), TrackIngredients.RAIL_STRAP_IRON, TrackIngredients.RAILBED_WOOD) {
         @Override
         protected TrackType make(TrackType.Builder builder) {

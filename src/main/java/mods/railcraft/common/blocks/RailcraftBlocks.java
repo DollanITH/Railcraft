@@ -397,6 +397,9 @@ public enum RailcraftBlocks implements IRailcraftBlockContainer {
     TRACK_FLEX_REINFORCED(BlockDef.build("track_flex_reinforced", BlockTrackFlex.class)
             .block(() -> new BlockTrackFlex(TrackTypes.REINFORCED.getTrackType()))
             .item(ItemTrackStateless::new)),
+    TRACK_FLEX_REINFORCED_GROUND(BlockDef.build("track_flex_reinforced_ground", BlockTrackFlex.class)
+            .block(() -> new BlockTrackFlex(TrackTypes.REINFORCED_GROUND.getTrackType()))
+            .item(ItemTrackStateless::new)),
     TRACK_FLEX_STRAP_IRON(BlockDef.build("track_flex_strap_iron", BlockTrackFlex.class)
             .block(() -> new BlockTrackFlex(TrackTypes.STRAP_IRON.getTrackType()))
             .item(ItemTrackStateless::new)),

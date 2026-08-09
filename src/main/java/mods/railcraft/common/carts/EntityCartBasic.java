@@ -46,6 +46,21 @@ public class EntityCartBasic extends EntityMinecartEmpty implements IRailcraftCa
     }
 
     @Override
+    public float getMaxCartSpeedOnRail() {
+        return 5.0F;
+    }
+
+    @Override
+    public double getMountedYOffset() {
+        return 0.789;
+    }
+
+    @Override
+    public boolean shouldRiderSit() {
+        return false;
+    }
+
+    @Override
     protected void writeEntityToNBT(NBTTagCompound compound) {
         super.writeEntityToNBT(compound);
         saveToNBT(compound);

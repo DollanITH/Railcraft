@@ -38,7 +38,7 @@ public class TrackKitBooster extends TrackKitPowered {
     @Override
     public void onMinecartPass(EntityMinecart cart) {
         TrackType trackType = getTile().getTrackType();
-        if (TrackTypes.REINFORCED.getTrackType() == trackType)
+        if (TrackTypes.REINFORCED.getTrackType() == trackType ||TrackTypes.REINFORCED_GROUND.getTrackType() == trackType)
             onMinecartPassStandard(cart, BOOST_FACTOR_REINFORCED);
         else if (trackType.isHighSpeed())
             onMinecartPassHighSpeed(cart);

@@ -17,7 +17,8 @@ public class ModuleTracksReinforced extends RailcraftModulePayload {
 
     public ModuleTracksReinforced() {
         add(
-                RailcraftBlocks.TRACK_FLEX_REINFORCED
+                RailcraftBlocks.TRACK_FLEX_REINFORCED,
+                RailcraftBlocks.TRACK_FLEX_REINFORCED_GROUND
         );
     }
 }
