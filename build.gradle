@@ -77,8 +77,8 @@ def actualRunDir = project.file(minecraft.runDir)
 // Change the 4G in -Xmx4G to your desired max RAM and 4G in -Xms4G to your desired initial RAM
 
 def optimizedVmArgs = [
-        "-Xms4G",
-        "-Xmx4G",
+        "-Xms8G",
+        "-Xmx8G",
         "-XX:+UseG1GC",
         "-XX:+ParallelRefProcEnabled",
         "-XX:MaxGCPauseMillis=200",

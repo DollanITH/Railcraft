@@ -118,25 +118,52 @@ public class EntityCartBasic extends EntityMinecartEmpty implements IRailcraftCa
         double slopeAdjustment = getSlopeAdjustment();
         BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = blockrailbase.getRailDirection(world, pos, state, this);
 
+        // 调试信息：输出轨道方向变化
+        if (world.isRemote) {
+            System.out.println("Cart at " + pos + " rail direction: " + blockrailbase$enumraildirection +
+                              " speed: " + Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ));
+        }
+
+        // 保守的弯道优化：仅小幅减少损失
+        if (mods.railcraft.common.blocks.tracks.TrackShapeHelper.isTurn(blockrailbase$enumraildirection)) {
+            conservativeCornerOptimization(blockrailbase$enumraildirection);
+        }
+
         switch (blockrailbase$enumraildirection) {
             case ASCENDING_EAST:
                 this.motionX -= slopeAdjustment;
                 ++this.posY;
+                conservativeSlopeOptimization(blockrailbase$enumraildirection);
                 break;
             case ASCENDING_WEST:
                 this.motionX += slopeAdjustment;
                 ++this.posY;
+                conservativeSlopeOptimization(blockrailbase$enumraildirection);
                 break;
             case ASCENDING_NORTH:
                 this.motionZ += slopeAdjustment;
                 ++this.posY;
+                conservativeSlopeOptimization(blockrailbase$enumraildirection);
                 break;
             case ASCENDING_SOUTH:
                 this.motionZ -= slopeAdjustment;
                 ++this.posY;
+                conservativeSlopeOptimization(blockrailbase$enumraildirection);
+                break;
         }
 
-        int[][] aint = MATRIX[blockrailbase$enumraildirection.getMetadata()];
+        // 检查是否是从侧边接近的矿车
+        boolean isSideApproaching = isSideApproachingCart(pos, blockrailbase$enumraildirection);
+
+        int[][] aint;
+        if (isSideApproaching) {
+            // 对于侧向接近的矿车，使用直行矩阵
+            aint = getSideApproachMatrix(blockrailbase$enumraildirection, this);
+            System.out.println("DEBUG: Side approaching cart detected, using straight matrix");
+        } else {
+            aint = MATRIX[blockrailbase$enumraildirection.getMetadata()];
+        }
+
         double d1 = (double) (aint[1][0] - aint[0][0]);
         double d2 = (double) (aint[1][2] - aint[0][2]);
         double d3 = Math.sqrt(d1 * d1 + d2 * d2);
@@ -153,8 +180,14 @@ public class EntityCartBasic extends EntityMinecartEmpty implements IRailcraftCa
             d5 = 2.0D;
         }
 
+        // 使用原始逻辑，保持稳定性
         this.motionX = d5 * d1 / d3;
         this.motionZ = d5 * d2 / d3;
+
+        // 调试输出
+        if (isSideApproaching) {
+            System.out.println("DEBUG: Cart from side, new direction: X=" + this.motionX + ", Z=" + this.motionZ);
+        }
         Entity entity = this.getPassengers().isEmpty() ? null : this.getPassengers().get(0);
 
         if (entity instanceof EntityLivingBase) {
@@ -346,6 +379,118 @@ public class EntityCartBasic extends EntityMinecartEmpty implements IRailcraftCa
             setRollingAmplitude(10);
             setDamage(50.0F);
             markVelocityChanged();
+        }
+    }
+
+    /**
+     * 保守的弯道优化 - 仅小幅减少损失，避免脱轨
+     */
+    private void conservativeCornerOptimization(BlockRailBase.EnumRailDirection direction) {
+        // 计算当前速度
+        double currentSpeed = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+
+        // 保守策略：仅损失2%的速度（而非0.5%）
+        double cornerSpeedMultiplier = 0.98;
+
+        // 应用弯道速度保持
+        this.motionX *= cornerSpeedMultiplier;
+        this.motionZ *= cornerSpeedMultiplier;
+
+        // 保持原始方向计算，避免复杂的角度插值
+    }
+
+    /**
+     * 保守的坡道优化 - 防止速度过快
+     */
+    private void conservativeSlopeOptimization(BlockRailBase.EnumRailDirection direction) {
+        if (!direction.isAscending()) return;
+
+        double currentSpeed = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+
+        // 保守的重力损失：3%
+        double gravityLoss = 0.03;
+
+        // 保守的补偿：仅补偿1%
+        double boostFactor = 1.01;
+
+        // 应用坡道物理
+        this.motionX *= (1.0 - gravityLoss) * boostFactor;
+        this.motionZ *= (1.0 - gravityLoss) * boostFactor;
+
+        // 保守的速度限制
+        double maxSlopeSpeed = 1.2f;
+        if (currentSpeed * boostFactor > maxSlopeSpeed) {
+            double ratio = maxSlopeSpeed / (currentSpeed * boostFactor);
+            this.motionX *= ratio;
+            this.motionZ *= ratio;
+        }
+    }
+
+    /**
+     * 检查矿车是否从侧边接近道岔
+     */
+    private boolean isSideApproachingCart(BlockPos pos, BlockRailBase.EnumRailDirection trackDirection) {
+        // 计算矿车相对于道岔中心的位置
+        double cartX = this.posX;
+        double cartZ = this.posZ;
+        double switchX = pos.getX() + 0.5;
+        double switchZ = pos.getZ() + 0.5;
+
+        // 计算相对位置
+        double dx = cartX - switchX;
+        double dz = cartZ - switchZ;
+
+        // 根据轨道方向判断是否从侧边接近
+        if (trackDirection == BlockRailBase.EnumRailDirection.NORTH_SOUTH) {
+            // 南北向轨道，侧边是东西方向
+            // 如果X方向偏移大于Z方向偏移，认为是侧向接近
+            return Math.abs(dx) > Math.abs(dz);
+        } else if (trackDirection == BlockRailBase.EnumRailDirection.EAST_WEST) {
+            // 东西向轨道，侧边是南北方向
+            // 如果Z方向偏移大于X方向偏移，认为是侧向接近
+            return Math.abs(dz) > Math.abs(dx);
+        }
+
+        // 对于其他轨道类型，使用保守判断
+        return Math.abs(dx) > 0.3 || Math.abs(dz) > 0.3;
+    }
+
+    /**
+     * 为侧向接近的矿车生成直行矩阵
+     */
+    private int[][] getSideApproachMatrix(BlockRailBase.EnumRailDirection trackDirection, EntityMinecart cart) {
+        // 根据矿车的运动方向生成直行矩阵
+        double speedX = cart.motionX;
+        double speedZ = cart.motionZ;
+
+        // 归一化运动方向
+        double magnitude = Math.sqrt(speedX * speedX + speedZ * speedZ);
+        if (magnitude == 0) {
+            // 如果没有运动，使用默认直行
+            return getStraightMatrix(trackDirection);
+        }
+
+        double normalizedX = speedX / magnitude;
+        double normalizedZ = speedZ / magnitude;
+
+        // 创建直行矩阵
+        return new int[][]{
+            {0, 0, 0}, // 第一个点不重要
+            {(int) Math.round(normalizedX), 0, (int) Math.round(normalizedZ)} // 运动方向
+        };
+    }
+
+    /**
+     * 获取指定方向的直行矩阵
+     */
+    private int[][] getStraightMatrix(BlockRailBase.EnumRailDirection trackDirection) {
+        switch (trackDirection) {
+            case NORTH_SOUTH:
+                return new int[][]{{0, 0, 0}, {0, 0, 1}}; // 南北向直行
+            case EAST_WEST:
+                return new int[][]{{0, 0, 0}, {1, 0, 0}};  // 东西向直行
+            default:
+                return new int[][]{{0, 0, 0}, {0, 0, 1}};  // 默认南北向
         }
     }
 }

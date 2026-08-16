@@ -55,6 +55,11 @@ public enum RailcraftCarts implements IRailcraftCartContainer {
 
     // Vanilla Carts
     BASIC(0, "cart_basic", EntityCartBasic.class, EntityCartBasic::new, ItemCart::new),
+    CHEST(0, "cart_chest", EntityCartChest.class, EntityCartChest::new, (c) -> Items.CHEST_MINECART, from(Blocks.CHEST)),
+    COMMAND_BLOCK(3, "cart_command_block", EntityCartCommand.class, EntityCartCommand::new, (c) -> Items.COMMAND_BLOCK_MINECART, null),
+    FURNACE(0, "cart_furnace", EntityCartFurnace.class, EntityCartFurnace::new, (c) -> Items.FURNACE_MINECART, from(Blocks.FURNACE)),
+    HOPPER(0, "cart_hopper", EntityCartHopper.class, EntityCartHopper::new, (c) -> Items.HOPPER_MINECART, from(Blocks.HOPPER)),
+    TNT(0, "cart_tnt", EntityCartTNT.class, EntityCartTNT::new, (c) -> Items.TNT_MINECART, from(Blocks.TNT)),
     // Item form added by Railcraft
     SPAWNER(0, "cart_spawner", EntityCartSpawner.class, EntityCartSpawner::new, ItemCartSpawner::new, null),
 
@@ -197,6 +202,16 @@ public enum RailcraftCarts implements IRailcraftCartContainer {
     public static @Nullable IRailcraftCartContainer getCartType(@Nullable ItemStack cart) {
         if (cart == null)
             return null;
+        if (cart.getItem() == Items.CHEST_MINECART)
+            return RailcraftCarts.CHEST;
+        if (cart.getItem() == Items.TNT_MINECART)
+            return RailcraftCarts.TNT;
+        if (cart.getItem() == Items.FURNACE_MINECART)
+            return RailcraftCarts.FURNACE;
+        if (cart.getItem() == Items.HOPPER_MINECART)
+            return RailcraftCarts.HOPPER;
+        if (cart.getItem() == Items.COMMAND_BLOCK_MINECART)
+            return RailcraftCarts.COMMAND_BLOCK;
         if (cart.getItem() instanceof ItemCart)
             return ((ItemCart) cart.getItem()).getCartType();
         return null;
@@ -303,6 +318,15 @@ public enum RailcraftCarts implements IRailcraftCartContainer {
 
     public boolean isVanillaCart() {
         // Note: Spawner minecarts are from vanilla but the item form is from Railcraft.
+        switch (this) {
+            case CHEST:
+            case HOPPER:
+            case COMMAND_BLOCK:
+            case BASIC:
+            case FURNACE:
+            case TNT:
+                return true;
+        }
         return false;
     }
 
