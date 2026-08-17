@@ -50,7 +50,7 @@ import java.util.Locale;
 public abstract class CartBaseMaintenance extends CartBase implements IGuiReturnHandler {
 
     private static final DataParameter<Byte> BLINK = DataManagerPlugin.create(DataSerializers.BYTE);
-    protected static final double DRAG_FACTOR = 0.9;
+    protected static final double DRAG_FACTOR = 0.95;
     private static final int BLINK_DURATION = 3;
     public static final DataParameter<Byte> CART_MODE = DataManagerPlugin.create(DataSerializers.BYTE);
     private final MultiButtonController<CartMode> modeController = MultiButtonController.create(0, CartMode.VALUES);

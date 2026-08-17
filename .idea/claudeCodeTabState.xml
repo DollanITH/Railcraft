@@ -7,8 +7,11 @@
           <value>
             <TabSessionState>
               <option name="provider" value="claude" />
+              <option name="sessionId" value="50767e2a-8c63-49d0-b151-ee7d451193fa" />
+              <option name="cwd" value="E:\railcraft\DOLLANCRAFT RAILCRAFT" />
               <option name="model" value="claude-sonnet-4-7" />
-              <option name="permissionMode" value="plan" />
+              <option name="permissionMode" value="default" />
+              <option name="reasoningEffort" value="medium" />
             </TabSessionState>
           </value>
         </entry>

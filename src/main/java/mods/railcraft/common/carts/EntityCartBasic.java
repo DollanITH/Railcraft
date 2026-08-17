@@ -213,7 +213,6 @@ public class EntityCartBasic extends EntityMinecartEmpty implements IRailcraftCa
             this.setPosition(this.posX, this.posY + (double) aint[1][1], this.posZ);
         }
 
-        this.applyDrag();
         Vec3d vec3d1 = this.getPos(this.posX, this.posY, this.posZ);
 
         if (vec3d1 != null && vec3d != null) {

@@ -349,6 +349,20 @@ public final class Train implements Iterable<EntityMinecart> {
         return carts.size();
     }
 
+    /**
+     * Get the cart at the specified index
+     * @param index The index of the cart to retrieve
+     * @return The cart at the specified index, or null if invalid index
+     */
+    @Nullable
+    public EntityMinecart get(int index) {
+        if (index < 0 || index >= carts.size()) {
+            return null;
+        }
+        UUID cartId = carts.get(index);
+        return getCart(cartId);
+    }
+
     public boolean isEmpty() {
         return carts.isEmpty();
     }
