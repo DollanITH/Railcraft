@@ -218,7 +218,7 @@ public final class VillagerTrades {
         private final int priceHigh;
 
         static {
-            cheap.add(RailcraftCarts.BASIC);
+            cheap.add(RailcraftCarts.NORMAL);
             cheap.add(RailcraftCarts.CHEST);
             cheap.add(RailcraftCarts.HOPPER);
             cheap.add(RailcraftCarts.TNT);

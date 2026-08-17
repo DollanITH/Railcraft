@@ -17,6 +17,7 @@ public class EntityIDs {
 
     // CARTS
     public static final int CART_BASIC = 1;
+    public static final int CART_NORMAL = 8;
     public static final int CART_CHEST = 2;
     public static final int CART_FURNACE = 3;
     public static final int CART_TNT = 4;

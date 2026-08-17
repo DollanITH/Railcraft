@@ -54,7 +54,8 @@ import static mods.railcraft.common.carts.CartTools.initCartPos;
 public enum RailcraftCarts implements IRailcraftCartContainer {
 
     // Vanilla Carts
-    BASIC(0, "cart_basic", EntityCartBasic.class, EntityCartBasic::new, ItemCart::new),
+    NORMAL(0, "cart_normal", EntityCartBasic.class, EntityCartBasic::new,(c) -> Items.MINECART),
+    BASIC(0, "cart_basic", EntityPOVCart.class, EntityPOVCart::new, ItemCart::new),
     CHEST(0, "cart_chest", EntityCartChest.class, EntityCartChest::new, (c) -> Items.CHEST_MINECART, from(Blocks.CHEST)),
     COMMAND_BLOCK(3, "cart_command_block", EntityCartCommand.class, EntityCartCommand::new, (c) -> Items.COMMAND_BLOCK_MINECART, null),
     FURNACE(0, "cart_furnace", EntityCartFurnace.class, EntityCartFurnace::new, (c) -> Items.FURNACE_MINECART, from(Blocks.FURNACE)),
@@ -192,7 +193,7 @@ public enum RailcraftCarts implements IRailcraftCartContainer {
 
     public static IRailcraftCartContainer fromClass(Class<? extends EntityMinecart> clazz) {
         IRailcraftCartContainer result = classToContainer.get(clazz);
-        return result == null ? BASIC : result;
+        return result == null ? NORMAL : result;
     }
 
     public static IRailcraftCartContainer fromCart(EntityMinecart cart) {
@@ -202,6 +203,8 @@ public enum RailcraftCarts implements IRailcraftCartContainer {
     public static @Nullable IRailcraftCartContainer getCartType(@Nullable ItemStack cart) {
         if (cart == null)
             return null;
+        if (cart.getItem() == Items.MINECART)
+            return RailcraftCarts.NORMAL;
         if (cart.getItem() == Items.CHEST_MINECART)
             return RailcraftCarts.CHEST;
         if (cart.getItem() == Items.TNT_MINECART)
@@ -322,7 +325,7 @@ public enum RailcraftCarts implements IRailcraftCartContainer {
             case CHEST:
             case HOPPER:
             case COMMAND_BLOCK:
-            case BASIC:
+            case NORMAL:
             case FURNACE:
             case TNT:
                 return true;

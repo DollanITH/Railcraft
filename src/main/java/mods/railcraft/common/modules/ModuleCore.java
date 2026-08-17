@@ -113,7 +113,13 @@ public class ModuleCore extends RailcraftModulePayload {
                 RailcraftItems.TIE,
                 RailcraftItems.REBAR,
 
+                RailcraftCarts.NORMAL,
                 RailcraftCarts.BASIC,
+                RailcraftCarts.CHEST,
+                RailcraftCarts.FURNACE,
+                RailcraftCarts.TNT,
+                RailcraftCarts.HOPPER,
+                RailcraftCarts.COMMAND_BLOCK,
                 RailcraftCarts.SPAWNER,
 
                 RailcraftFluids.CREOSOTE,
@@ -247,12 +253,23 @@ public class ModuleCore extends RailcraftModulePayload {
 
                 // Vanilla ids:
                 Map<EntityMinecart.Type, ResourceLocation> names = new EnumMap<>(EntityMinecart.Type.class);
+                names.put(EntityMinecart.Type.RIDEABLE, new ResourceLocation("minecart")); // 42
                 names.put(EntityMinecart.Type.COMMAND_BLOCK, new ResourceLocation("commandblock_minecart")); // 40
                 names.put(EntityMinecart.Type.CHEST, new ResourceLocation("chest_minecart")); // 43
                 names.put(EntityMinecart.Type.FURNACE, new ResourceLocation("furnace_minecart")); // 44
                 names.put(EntityMinecart.Type.TNT, new ResourceLocation("tnt_minecart")); // 45
                 names.put(EntityMinecart.Type.HOPPER, new ResourceLocation("hopper_minecart")); // 46
                 names.put(EntityMinecart.Type.SPAWNER, new ResourceLocation("spawner_minecart")); // 47
+
+                // Items
+                replaceVanillaCart(names, RailcraftCarts.COMMAND_BLOCK, Items.COMMAND_BLOCK_MINECART, EntityMinecart.Type.COMMAND_BLOCK, 40);
+                replaceVanillaCart(names, RailcraftCarts.NORMAL, Items.MINECART, EntityMinecart.Type.RIDEABLE, 42);
+                replaceVanillaCart(names, RailcraftCarts.CHEST, Items.CHEST_MINECART, EntityMinecart.Type.CHEST, 43);
+                replaceVanillaCart(names, RailcraftCarts.FURNACE, Items.FURNACE_MINECART, EntityMinecart.Type.FURNACE, 44);
+                replaceVanillaCart(names, RailcraftCarts.TNT, Items.TNT_MINECART, EntityMinecart.Type.TNT, 45);
+                replaceVanillaCart(names, RailcraftCarts.HOPPER, Items.HOPPER_MINECART, EntityMinecart.Type.HOPPER, 46);
+                if (RailcraftCarts.SPAWNER.isLoaded())
+                    replaceVanillaCart(names, RailcraftCarts.SPAWNER, null, EntityMinecart.Type.SPAWNER, 47);
 
                 float h = TrackConstants.HARDNESS;
                 Blocks.RAIL.setHardness(h).setHarvestLevel("crowbar", 0);
@@ -262,6 +279,35 @@ public class ModuleCore extends RailcraftModulePayload {
 
                 MachineTileRegistry.registerTileEntities();
                 RailcraftAdvancementTriggers.getInstance().register();
+            }
+
+            private void replaceVanillaCart(Map<EntityMinecart.Type, ResourceLocation> names,
+                                            RailcraftCarts cartType, @Nullable Item original,
+                                            EntityMinecart.Type minecartType, int entityId) {
+                ResourceLocation key = names.get(minecartType);
+                EntityEntry old = checkNotNull(ForgeRegistries.ENTITIES.getValue(key));
+                Class<? extends Entity> minecartClass = old.getEntityClass();
+
+                CartTools.classReplacements.put(minecartClass, cartType);
+                if (original != null)
+                    CartTools.vanillaCartItemMap.put(original, cartType);
+
+                EntityEntry substitute = createHackedEntityEntryBuilder()
+                        .id(key, entityId)
+                        .entity(minecartClass)
+                        .name(old.getName())
+                        .factory(cartType.getFactory())
+                        .tracker(80, 2, true)
+                        .build();
+                ForgeRegistries.ENTITIES.register(substitute);
+                Game.log().msg(Level.WARN, "Successfully substituted {0} with {1}. This is an intended override.", key, cartType.getRegistration().getRegistryName());
+
+                if (original != null) {
+                    BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(original, new BehaviorDefaultDispenseItem());
+
+                    original.setMaxStackSize(RailcraftConfig.getMinecartStackSize());
+                    original.setCreativeTab(CreativeTabs.TRANSPORTATION);
+                }
             }
 
             private EntityEntryBuilder<Entity> createHackedEntityEntryBuilder() {
