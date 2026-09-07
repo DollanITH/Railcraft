@@ -82,7 +82,7 @@ public abstract class GuiLocomotive extends GuiTitled {
         speedButtons.add(reverseButton);
         for (LocoSpeed speed : LocoSpeed.VALUES) {
             String label = String.valueOf(speed.getLevel());
-            GuiToggleButtonSmall button = new GuiToggleButtonSmall(id++, 0, h + ySize - 112, 4, label, loco.clientSpeed == speed);
+            GuiToggleButtonSmall button = new GuiToggleButtonSmall(id++, 0, h + ySize - 112, 24, label, loco.clientSpeed == speed);
             button.setClickConsumer(b -> loco.clientSpeed = speed);
             button.setStatusUpdater(b -> b.active = loco.clientSpeed == speed);
             speedButtons.add(button);
