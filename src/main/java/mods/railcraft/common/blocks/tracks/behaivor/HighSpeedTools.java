@@ -31,10 +31,10 @@ import org.jetbrains.annotations.Nullable;
  * @author CovertJaguar <http://www.railcraft.info>
  */
 public final class HighSpeedTools {
-    public static final float SPEED_EXPLODE = 0.5f;
-    public static final float SPEED_CUTOFF = 0.499f;
+    public static final float SPEED_EXPLODE = 1.0f;
+    public static final float SPEED_CUTOFF = 0.525f;
     public static final int LOOK_AHEAD_DIST = 2;
-    public static final float SPEED_SLOPE = 0.45f;
+    public static final float SPEED_SLOPE = 0.55f;
 
     public static void checkSafetyAndExplode(World world, BlockPos pos, EntityMinecart cart) {
         if (!isTrackSafeForHighSpeed(world, pos, cart)) {

@@ -452,16 +452,19 @@ public abstract class EntityLocomotive extends CartBase implements IDirectionalC
         }
 
         if (speed != LocoSpeed.MAX) {
-            float limit = 0.4f;
+            float limit = 0.6f;
             switch (speed) {
                 case SLOWEST:
-                    limit = 0.1f;
+                    limit = 0.125f;
                     break;
                 case SLOWER:
-                    limit = 0.2f;
+                    limit = 0.25f;
                     break;
                 case NORMAL:
-                    limit = 0.3f;
+                    limit = 0.4f;
+                    break;
+                case FASTER:
+                    limit = 0.5f;
                     break;
             }
             motionX = Math.copySign(Math.min(Math.abs(motionX), limit), motionX);
@@ -478,6 +481,7 @@ public abstract class EntityLocomotive extends CartBase implements IDirectionalC
                 case SLOWER:
                     return 4;
                 case NORMAL:
+                case FASTER:
                     return 6;
                 default:
                     return 8;
@@ -825,7 +829,8 @@ public abstract class EntityLocomotive extends CartBase implements IDirectionalC
         SLOWEST(1, 1, 0),
         SLOWER(2, 1, -1),
         NORMAL(3, 1, -1),
-        MAX(4, 0, -1);
+        FASTER(4, 1, -1),
+        MAX(5, 0, -1);
         public static final LocoSpeed[] VALUES = values();
         private final int shiftUp;
         private final int shiftDown;
