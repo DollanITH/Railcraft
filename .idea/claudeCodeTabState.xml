@@ -7,9 +7,9 @@
           <value>
             <TabSessionState>
               <option name="provider" value="claude" />
-              <option name="sessionId" value="d5c3102e-26c5-4be9-b0b4-8cafba70908b" />
-              <option name="cwd" value="E:\railcraft\DOLLANCRAFT RAILCRAFT" />
-              <option name="model" value="claude-sonnet-5" />
+              <option name="sessionId" value="1bd2283c-b7cf-41f7-8f35-ebd6fcbbaa7a" />
+              <option name="cwd" value="E:\mdk\Railcraft" />
+              <option name="model" value="claude-haiku-4-5" />
               <option name="permissionMode" value="default" />
             </TabSessionState>
           </value>

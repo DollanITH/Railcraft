@@ -85,6 +85,11 @@ public final class TextureAtlasSheet extends TextureAtlasSprite {
             return true;
         }
 
+        if (image == null) {
+            Game.log().msg(Level.WARN, "Sub-texture from {0} is null after loading", fullLocation.getPath());
+            return true;
+        }
+
         int mipmapLevels = Minecraft.getMinecraft().gameSettings.mipmapLevels;
 
         int size = image.getHeight() / rows;
